@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 扫描controller的注解，别的不扫描 -->
+    <context:component-scan base-package="vip.qicp.gggxy">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <!-- 配置视图解析器 -->
+    <bean id="jspResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"></property>
+        <property name="suffix" value=".jsp"></property>
+    </bean>
+    <!--开启注解支持-->
+    <mvc:annotation-driven></mvc:annotation-driven>
+
+   <!--  设置静态资源不过滤-->
+    <mvc:resources location="/css/" mapping="/css/**" />
+    <mvc:resources location="/images/" mapping="/images/**" />
+    <mvc:resources location="/js/" mapping="/js/**" />
+    <mvc:resources location="/fonts/" mapping="/fonts/**" />
+
+    <!--配置拦截器-->
+    <!-- 配置拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- 哪些方法进行拦截 -->
+            <mvc:mapping path="/**"/>
+            <!-- 哪些方法不进行拦截-->
+            <mvc:exclude-mapping path="/login"/>
+            <mvc:exclude-mapping path="/user/reg"/>
+            <mvc:exclude-mapping path="/images/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/font/**"/>
+            <!-- 注册拦截器对象 -->
+            <bean class="vip.qicp.gggxy.interceptor.LoginIntercept"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+
+    <!--自定义类型转换器-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="vip.qicp.gggxy.utils.StringToDateConverter"></bean>
+            </set>
+        </property>
+    </bean>
+</beans>
